@@ -1,97 +1,151 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Mi Catálogo</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/catalog.css"/>
-</head>
-<body>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-<!-- NAVBAR -->
-<nav class="navbar" id="navbar">
-  <div class="nav-left">
-    <span class="brand-icon">◈</span>
-    <span class="nav-title">Catálogo</span>
-  </div>
-  <div class="nav-right">
-    <button class="btn-nav" id="btnAddCategory">+ Categoría</button>
-    <button class="btn-nav btn-pdf" id="btnExportPDF">⬇ Exportar PDF</button>
-    <button class="btn-nav btn-logout" id="btnLogout">Salir</button>
-  </div>
-</nav>
+:root {
+  --bg: #f7f5f2;
+  --card: #ffffff;
+  --ink: #1a1a1a;
+  --ink-soft: #6b6b6b;
+  --accent: #2c2c2c;
+  --accent-hover: #000000;
+  --border: #e0ddd8;
+  --error: #c0392b;
+  --radius: 2px;
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body: 'DM Sans', sans-serif;
+}
 
-<!-- MAIN -->
-<main class="main-content" id="mainContent">
-  <div class="empty-state" id="emptyState">
-    <span class="empty-icon">◈</span>
-    <p>Tu catálogo está vacío.</p>
-    <p class="empty-sub">Comenzá agregando una categoría.</p>
-    <button class="btn-primary" id="btnAddCategoryEmpty">+ Agregar categoría</button>
-  </div>
-  <div id="categoriesContainer"></div>
-</main>
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+}
 
-<!-- MODAL: Category -->
-<div class="modal-overlay" id="modalCategory">
-  <div class="modal">
-    <h2 class="modal-title" id="modalCategoryTitle">Nueva Categoría</h2>
-    <div class="form-group">
-      <label>Nombre de la categoría</label>
-      <input type="text" id="inputCategoryName" placeholder="Ej: Bebidas"/>
-    </div>
-    <div id="subcategoriesFields">
-      <label class="sub-label">Subcategorías <span class="hint">(opcional)</span></label>
-      <div id="subList"></div>
-      <button class="btn-link" id="btnAddSub">+ Agregar subcategoría</button>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-secondary" id="btnCancelCategory">Cancelar</button>
-      <button class="btn-primary" id="btnSaveCategory">Guardar</button>
-    </div>
-  </div>
-</div>
+.login-wrapper {
+  width: 100%;
+  padding: 24px;
+  display: flex;
+  justify-content: center;
+}
 
-<!-- MODAL: Product -->
-<div class="modal-overlay" id="modalProduct">
-  <div class="modal">
-    <h2 class="modal-title" id="modalProductTitle">Nuevo Producto</h2>
-    <div class="form-group">
-      <label>Nombre del producto <span class="req">*</span></label>
-      <input type="text" id="inputProductName" placeholder="Ej: Café con leche"/>
-    </div>
-    <div class="form-group">
-      <label>Descripción <span class="hint">(opcional)</span></label>
-      <textarea id="inputProductDesc" placeholder="Breve descripción..."></textarea>
-    </div>
-    <div class="form-group">
-      <label>Precio (ARS $) <span class="req">*</span></label>
-      <input type="number" id="inputProductPrice" placeholder="0.00" min="0" step="0.01"/>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-secondary" id="btnCancelProduct">Cancelar</button>
-      <button class="btn-primary" id="btnSaveProduct">Guardar</button>
-    </div>
-  </div>
-</div>
+.login-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 52px 48px;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: fadeUp 0.5s ease both;
+}
 
-<!-- MODAL: Confirm Delete -->
-<div class="modal-overlay" id="modalConfirm">
-  <div class="modal modal-sm">
-    <h2 class="modal-title">Confirmar eliminación</h2>
-    <p class="confirm-text" id="confirmText">¿Estás seguro de que querés eliminar esto?</p>
-    <div class="modal-actions">
-      <button class="btn-secondary" id="btnCancelConfirm">Cancelar</button>
-      <button class="btn-danger" id="btnConfirmDelete">Eliminar</button>
-    </div>
-  </div>
-</div>
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
+.brand {
+  text-align: center;
+  margin-bottom: 12px;
+}
 
-<script type="module" src="js/app.js"></script>
-</body>
-</html>
+.brand-icon {
+  font-size: 28px;
+  display: block;
+  margin-bottom: 12px;
+  letter-spacing: 0;
+  color: var(--ink);
+}
+
+.brand h1 {
+  font-family: var(--font-display);
+  font-size: 38px;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+}
+
+.brand-sub {
+  font-size: 12px;
+  color: var(--ink-soft);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-top: 6px;
+  font-weight: 300;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.form-group label {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+
+.form-group input {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  font-size: 14px;
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--bg);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+  border-color: var(--ink);
+  background: #fff;
+}
+
+.btn-login {
+  margin-top: 6px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 14px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: background 0.2s;
+}
+
+.btn-login:hover { background: var(--accent-hover); }
+
+.error-msg {
+  font-size: 13px;
+  color: var(--error);
+  text-align: center;
+  min-height: 18px;
+}
+
+.register-link {
+  text-align: center;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.register-link a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 480px) {
+  .login-card { padding: 36px 24px; }
+}
