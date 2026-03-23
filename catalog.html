@@ -6,12 +6,141 @@
   <title>Mi Catálogo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/catalog.css"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f7f5f2; --surface: #ffffff; --ink: #1a1a1a; --ink-soft: #6b6b6b; --ink-faint: #a8a49e;
+      --accent: #1a1a1a; --border: #e0ddd8; --border-light: #eeece9;
+      --danger: #c0392b; --danger-hover: #962d22;
+      --shadow-md: 0 4px 20px rgba(0,0,0,0.10); --radius: 2px;
+      --font-display: 'Cormorant Garamond', serif; --font-body: 'DM Sans', sans-serif; --nav-h: 60px;
+    }
+    body { font-family: var(--font-body); background: var(--bg); color: var(--ink); min-height: 100vh; }
+
+    /* NAVBAR */
+    .navbar { position: sticky; top: 0; z-index: 100; height: var(--nav-h); background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; gap: 16px; }
+    .nav-left { display: flex; align-items: center; gap: 10px; }
+    .brand-icon { font-size: 20px; }
+    .nav-title { font-family: var(--font-display); font-size: 24px; font-weight: 300; letter-spacing: 0.04em; }
+    .nav-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .btn-nav { font-family: var(--font-body); font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; border: 1px solid var(--border); background: transparent; color: var(--ink); padding: 7px 14px; border-radius: var(--radius); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+    .btn-nav:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .btn-pdf { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .btn-pdf:hover { background: #000; }
+    .btn-logout { border-color: transparent; color: var(--ink-soft); }
+    .btn-logout:hover { background: #f0ede9; color: var(--ink); border-color: var(--border); }
+
+    /* MAIN */
+    .main-content { max-width: 1200px; margin: 0 auto; padding: 40px 32px 80px; }
+
+    /* EMPTY */
+    .empty-state { text-align: center; padding: 100px 24px; color: var(--ink-soft); }
+    .empty-icon { font-size: 40px; display: block; margin-bottom: 20px; opacity: 0.3; }
+    .empty-state p { font-size: 16px; margin-bottom: 6px; }
+    .empty-sub { font-size: 13px; color: var(--ink-faint); margin-bottom: 28px; }
+
+    /* BUTTONS */
+    .btn-primary { font-family: var(--font-body); font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; background: var(--accent); color: #fff; border: none; padding: 11px 22px; border-radius: var(--radius); cursor: pointer; transition: background 0.15s; }
+    .btn-primary:hover { background: #000; }
+    .btn-secondary { font-family: var(--font-body); font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; background: transparent; color: var(--ink-soft); border: 1px solid var(--border); padding: 11px 22px; border-radius: var(--radius); cursor: pointer; transition: all 0.15s; }
+    .btn-secondary:hover { border-color: var(--ink); color: var(--ink); }
+    .btn-danger { font-family: var(--font-body); font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; background: var(--danger); color: #fff; border: none; padding: 11px 22px; border-radius: var(--radius); cursor: pointer; transition: background 0.15s; }
+    .btn-danger:hover { background: var(--danger-hover); }
+    .btn-link { background: none; border: none; color: var(--ink-soft); font-size: 13px; cursor: pointer; padding: 4px 0; text-decoration: underline; text-underline-offset: 3px; font-family: var(--font-body); }
+    .btn-link:hover { color: var(--ink); }
+
+    /* CATEGORY */
+    .category-block { margin-bottom: 52px; animation: fadeUp 0.3s ease both; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .category-header { display: flex; align-items: center; gap: 12px; border-bottom: 2px solid var(--ink); padding-bottom: 12px; margin-bottom: 28px; }
+    .drag-handle-cat { color: var(--ink-faint); font-size: 18px; cursor: grab; user-select: none; flex-shrink: 0; }
+    .category-name { font-family: var(--font-display); font-size: 28px; font-weight: 300; letter-spacing: 0.03em; flex: 1; }
+    .category-actions { display: flex; gap: 8px; align-items: center; margin-left: auto; }
+    .btn-icon { background: none; border: 1px solid var(--border-light); color: var(--ink-soft); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius); cursor: pointer; font-size: 14px; transition: all 0.15s; flex-shrink: 0; }
+    .btn-icon:hover { border-color: var(--ink); color: var(--ink); background: var(--bg); }
+    .btn-icon.danger:hover { border-color: var(--danger); color: var(--danger); }
+
+    /* SUBCATEGORY */
+    .subcategory-section { margin-bottom: 32px; }
+    .subcategory-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 16px; font-weight: 500; display: flex; align-items: center; gap: 10px; }
+    .subcategory-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* PRODUCT GRID */
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-bottom: 16px; }
+    .product-card { background: var(--surface); border: 1px solid var(--border); padding: 20px; position: relative; transition: box-shadow 0.2s, transform 0.2s; cursor: grab; }
+    .product-card:active { cursor: grabbing; }
+    .product-card:hover { box-shadow: var(--shadow-md); }
+    .product-card.dragging { opacity: 0.4; transform: scale(0.97); }
+    .product-card.drag-over { border-color: var(--ink); border-style: dashed; }
+    .product-card-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 4px; opacity: 0; transition: opacity 0.15s; }
+    .product-card:hover .product-card-actions { opacity: 1; }
+    .product-drag-handle { position: absolute; top: 10px; left: 10px; color: var(--ink-faint); font-size: 14px; opacity: 0; transition: opacity 0.15s; cursor: grab; }
+    .product-card:hover .product-drag-handle { opacity: 1; }
+    .product-name { font-family: var(--font-display); font-size: 19px; font-weight: 400; margin-bottom: 8px; padding-right: 24px; line-height: 1.25; }
+    .product-desc { font-size: 12px; color: var(--ink-soft); line-height: 1.5; margin-bottom: 14px; }
+    .product-price { font-size: 15px; font-weight: 500; color: var(--ink); letter-spacing: 0.02em; }
+    .btn-add-product { background: none; border: 1px dashed var(--border); color: var(--ink-soft); font-size: 12px; font-family: var(--font-body); letter-spacing: 0.08em; text-transform: uppercase; padding: 10px 18px; border-radius: var(--radius); cursor: pointer; transition: all 0.15s; }
+    .btn-add-product:hover { border-color: var(--ink); color: var(--ink); background: var(--surface); }
+
+    /* MODAL */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 200; align-items: center; justify-content: center; padding: 24px; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: var(--surface); padding: 40px; width: 100%; max-width: 480px; animation: slideUp 0.25s ease; max-height: 90vh; overflow-y: auto; }
+    .modal-sm { max-width: 360px; }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .modal-title { font-family: var(--font-display); font-size: 26px; font-weight: 300; margin-bottom: 28px; }
+    .form-group { display: flex; flex-direction: column; gap: 7px; margin-bottom: 18px; }
+    .form-group label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); font-weight: 500; }
+    .form-group input, .form-group textarea { border: 1px solid var(--border); border-radius: var(--radius); padding: 11px 13px; font-size: 14px; font-family: var(--font-body); color: var(--ink); background: var(--bg); outline: none; transition: border-color 0.2s; resize: vertical; }
+    .form-group input:focus, .form-group textarea:focus { border-color: var(--ink); background: #fff; }
+    .form-group textarea { min-height: 80px; }
+    .sub-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); font-weight: 500; display: block; margin-bottom: 10px; }
+    #subList { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+    .sub-row { display: flex; gap: 8px; align-items: center; }
+    .sub-row input { border: 1px solid var(--border); border-radius: var(--radius); padding: 9px 12px; font-size: 13px; flex: 1; font-family: var(--font-body); outline: none; transition: border-color 0.2s; background: var(--bg); }
+    .sub-row input:focus { border-color: var(--ink); background: #fff; }
+    .sub-row button { background: none; border: none; color: var(--ink-soft); font-size: 18px; cursor: pointer; padding: 4px 6px; line-height: 1; transition: color 0.15s; }
+    .sub-row button:hover { color: var(--danger); }
+    .hint { color: var(--ink-faint); font-size: 10px; font-weight: 300; }
+    .req { color: var(--danger); }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 28px; }
+    .confirm-text { font-size: 14px; color: var(--ink-soft); line-height: 1.6; }
+
+    /* TOAST */
+    .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; font-size: 13px; padding: 12px 24px; border-radius: var(--radius); opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 999; white-space: nowrap; }
+    .toast.show { opacity: 1; }
+    .category-block.cat-drag-over { outline: 2px dashed var(--ink-faint); outline-offset: 4px; }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .navbar { padding: 0 16px; } .nav-title { font-size: 20px; }
+      .main-content { padding: 28px 16px 60px; }
+      .products-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+      .modal { padding: 28px 20px; }
+    }
+    @media (max-width: 480px) {
+      .nav-right .btn-nav:not(.btn-pdf):not(.btn-logout) { display: none; }
+      .products-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* PRINT */
+    @media print {
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .navbar, .category-actions, .product-card-actions, .product-drag-handle, .drag-handle-cat, .btn-add-product, .toast, .modal-overlay { display: none !important; }
+      body { background: #fff; }
+      .main-content { padding: 0; max-width: 100%; }
+      .category-block { page-break-inside: avoid; margin-bottom: 36px; }
+      .category-name { font-size: 22px; }
+      .products-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+      .product-card { border: 1px solid #ccc; padding: 14px; break-inside: avoid; }
+      .product-name { font-size: 15px; }
+      .product-price { font-size: 13px; font-weight: 600; }
+    }
+  </style>
 </head>
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar" id="navbar">
+<nav class="navbar">
   <div class="nav-left">
     <span class="brand-icon">◈</span>
     <span class="nav-title">Catálogo</span>
@@ -23,8 +152,7 @@
   </div>
 </nav>
 
-<!-- MAIN -->
-<main class="main-content" id="mainContent">
+<main class="main-content">
   <div class="empty-state" id="emptyState">
     <span class="empty-icon">◈</span>
     <p>Tu catálogo está vacío.</p>
@@ -34,7 +162,7 @@
   <div id="categoriesContainer"></div>
 </main>
 
-<!-- MODAL: Category -->
+<!-- Modal: Category -->
 <div class="modal-overlay" id="modalCategory">
   <div class="modal">
     <h2 class="modal-title" id="modalCategoryTitle">Nueva Categoría</h2>
@@ -42,7 +170,7 @@
       <label>Nombre de la categoría</label>
       <input type="text" id="inputCategoryName" placeholder="Ej: Bebidas"/>
     </div>
-    <div id="subcategoriesFields">
+    <div>
       <label class="sub-label">Subcategorías <span class="hint">(opcional)</span></label>
       <div id="subList"></div>
       <button class="btn-link" id="btnAddSub">+ Agregar subcategoría</button>
@@ -54,7 +182,7 @@
   </div>
 </div>
 
-<!-- MODAL: Product -->
+<!-- Modal: Product -->
 <div class="modal-overlay" id="modalProduct">
   <div class="modal">
     <h2 class="modal-title" id="modalProductTitle">Nuevo Producto</h2>
@@ -77,11 +205,11 @@
   </div>
 </div>
 
-<!-- MODAL: Confirm Delete -->
+<!-- Modal: Confirm -->
 <div class="modal-overlay" id="modalConfirm">
   <div class="modal modal-sm">
     <h2 class="modal-title">Confirmar eliminación</h2>
-    <p class="confirm-text" id="confirmText">¿Estás seguro de que querés eliminar esto?</p>
+    <p class="confirm-text" id="confirmText">¿Estás seguro?</p>
     <div class="modal-actions">
       <button class="btn-secondary" id="btnCancelConfirm">Cancelar</button>
       <button class="btn-danger" id="btnConfirmDelete">Eliminar</button>
@@ -89,9 +217,340 @@
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<script type="module" src="js/app.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDjJ7S7VLtfIY-3N_SrIpgvEkado-wHvUw",
+    authDomain: "catalogo-62d38.firebaseapp.com",
+    projectId: "catalogo-62d38",
+    storageBucket: "catalogo-62d38.firebasestorage.app",
+    messagingSenderId: "39586274990",
+    appId: "1:39586274990:web:1006cf310ab98f9361973f"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  let currentUser = null;
+  let catalog = [];
+
+  function uid() { return '_' + Math.random().toString(36).slice(2, 10); }
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) { window.location.href = "index.html"; return; }
+    currentUser = user;
+    await loadCatalog();
+    render();
+  });
+
+  async function saveCatalog() {
+    if (!currentUser) return;
+    try { await setDoc(doc(db, "catalogs", currentUser.uid), { data: JSON.stringify(catalog) }); }
+    catch (e) { console.error(e); }
+  }
+
+  async function loadCatalog() {
+    try {
+      const snap = await getDoc(doc(db, "catalogs", currentUser.uid));
+      if (snap.exists()) catalog = JSON.parse(snap.data().data || "[]");
+    } catch (e) { console.error(e); }
+  }
+
+  function toast(msg) {
+    const t = document.getElementById("toast");
+    t.textContent = msg; t.classList.add("show");
+    setTimeout(() => t.classList.remove("show"), 2500);
+  }
+
+  function openModal(id)  { document.getElementById(id).classList.add("open"); }
+  function closeModal(id) { document.getElementById(id).classList.remove("open"); }
+
+  function escHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function formatPrice(val) {
+    return Number(val).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function render() {
+    const container = document.getElementById("categoriesContainer");
+    const empty     = document.getElementById("emptyState");
+    container.innerHTML = "";
+    if (catalog.length === 0) { empty.style.display = ""; return; }
+    empty.style.display = "none";
+
+    catalog.forEach((cat, catIdx) => {
+      const block = document.createElement("div");
+      block.className = "category-block";
+      block.dataset.catIdx = catIdx;
+
+      block.innerHTML = `
+        <div class="category-header" draggable="true" data-cat-idx="${catIdx}">
+          <span class="drag-handle-cat">⠿</span>
+          <span class="category-name">${escHtml(cat.name)}</span>
+          <div class="category-actions">
+            <button class="btn-icon" data-action="editCat" data-cat-idx="${catIdx}">✎</button>
+            <button class="btn-icon danger" data-action="deleteCat" data-cat-idx="${catIdx}">✕</button>
+          </div>
+        </div>
+      `;
+
+      const hasSubs = cat.subcategories && cat.subcategories.length > 0;
+      if (hasSubs) {
+        const uncategorized = (cat.products || []).filter(p => !p.subcategoryId);
+        if (uncategorized.length > 0) block.appendChild(buildGrid(cat, catIdx, null, uncategorized));
+        cat.subcategories.forEach((sub) => {
+          const subProds = (cat.products || []).filter(p => p.subcategoryId === sub.id);
+          block.appendChild(buildGrid(cat, catIdx, sub, subProds));
+        });
+      } else {
+        block.appendChild(buildGrid(cat, catIdx, null, cat.products || []));
+      }
+
+      const addBtn = document.createElement("button");
+      addBtn.className = "btn-add-product";
+      addBtn.textContent = "+ Agregar producto";
+      addBtn.dataset.action = "addProduct";
+      addBtn.dataset.catIdx = catIdx;
+      block.appendChild(addBtn);
+      container.appendChild(block);
+    });
+
+    attachDragEvents();
+  }
+
+  function buildGrid(cat, catIdx, sub, products) {
+    const section = document.createElement("div");
+    section.className = "subcategory-section";
+    if (sub) section.innerHTML = `<div class="subcategory-label">${escHtml(sub.name)}</div>`;
+
+    const grid = document.createElement("div");
+    grid.className = "products-grid";
+    grid.dataset.catIdx = catIdx;
+    if (sub) grid.dataset.subId = sub.id;
+
+    products.forEach((prod) => {
+      const card = document.createElement("div");
+      card.className = "product-card";
+      card.draggable = true;
+      card.dataset.prodId = prod.id;
+      card.dataset.catIdx = catIdx;
+      card.innerHTML = `
+        <span class="product-drag-handle">⠿</span>
+        <div class="product-card-actions">
+          <button class="btn-icon" data-action="editProd" data-cat-idx="${catIdx}" data-prod-id="${prod.id}">✎</button>
+          <button class="btn-icon danger" data-action="deleteProd" data-cat-idx="${catIdx}" data-prod-id="${prod.id}">✕</button>
+        </div>
+        <div class="product-name">${escHtml(prod.name)}</div>
+        ${prod.desc ? `<div class="product-desc">${escHtml(prod.desc)}</div>` : ''}
+        <div class="product-price">ARS $ ${formatPrice(prod.price)}</div>
+      `;
+      grid.appendChild(card);
+    });
+
+    section.appendChild(grid);
+    return section;
+  }
+
+  // Event delegation
+  document.getElementById("categoriesContainer").addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-action]");
+    if (!btn) return;
+    const { action, catIdx, prodId } = btn.dataset;
+    const ci = parseInt(catIdx);
+    if (action === "addProduct")  openAddProduct(ci);
+    if (action === "editCat")     openEditCategory(ci);
+    if (action === "deleteCat")   confirmDelete("categoría", () => deleteCategory(ci));
+    if (action === "editProd")    openEditProduct(ci, prodId);
+    if (action === "deleteProd")  confirmDelete("producto", () => deleteProduct(ci, prodId));
+  });
+
+  document.getElementById("btnAddCategoryEmpty").addEventListener("click", () => openAddCategory());
+  document.getElementById("btnAddCategory").addEventListener("click", () => openAddCategory());
+  document.getElementById("btnLogout").addEventListener("click", () => signOut(auth).then(() => window.location.href = "index.html"));
+  document.getElementById("btnExportPDF").addEventListener("click", () => window.print());
+
+  // Category modal
+  let editingCatIdx = null;
+
+  function openAddCategory() {
+    editingCatIdx = null;
+    document.getElementById("modalCategoryTitle").textContent = "Nueva Categoría";
+    document.getElementById("inputCategoryName").value = "";
+    document.getElementById("subList").innerHTML = "";
+    openModal("modalCategory");
+  }
+
+  function openEditCategory(catIdx) {
+    editingCatIdx = catIdx;
+    const cat = catalog[catIdx];
+    document.getElementById("modalCategoryTitle").textContent = "Editar Categoría";
+    document.getElementById("inputCategoryName").value = cat.name;
+    document.getElementById("subList").innerHTML = "";
+    (cat.subcategories || []).forEach(sub => addSubRow(sub.name, sub.id));
+    openModal("modalCategory");
+  }
+
+  document.getElementById("btnAddSub").addEventListener("click", () => addSubRow());
+  document.getElementById("btnCancelCategory").addEventListener("click", () => closeModal("modalCategory"));
+
+  document.getElementById("btnSaveCategory").addEventListener("click", () => {
+    const name = document.getElementById("inputCategoryName").value.trim();
+    if (!name) { alert("El nombre es obligatorio."); return; }
+    const subs = [];
+    document.querySelectorAll("#subList .sub-row input").forEach(inp => {
+      const v = inp.value.trim();
+      if (v) subs.push({ id: inp.dataset.subId || uid(), name: v });
+    });
+    if (editingCatIdx !== null) {
+      catalog[editingCatIdx].name = name;
+      catalog[editingCatIdx].subcategories = subs;
+      toast("Categoría actualizada ✓");
+    } else {
+      catalog.push({ id: uid(), name, subcategories: subs, products: [] });
+      toast("Categoría creada ✓");
+    }
+    closeModal("modalCategory");
+    saveCatalog(); render();
+  });
+
+  function addSubRow(value = "", subId = "") {
+    const row = document.createElement("div");
+    row.className = "sub-row";
+    const id = subId || uid();
+    row.innerHTML = `<input type="text" placeholder="Ej: Sin alcohol" value="${escHtml(value)}" data-sub-id="${id}"/><button type="button">×</button>`;
+    row.querySelector("button").addEventListener("click", () => row.remove());
+    document.getElementById("subList").appendChild(row);
+  }
+
+  // Product modal
+  let addingToCatIdx = null, editingProdId = null;
+
+  function openAddProduct(catIdx) {
+    addingToCatIdx = catIdx; editingProdId = null;
+    document.getElementById("modalProductTitle").textContent = "Nuevo Producto";
+    document.getElementById("inputProductName").value = "";
+    document.getElementById("inputProductDesc").value = "";
+    document.getElementById("inputProductPrice").value = "";
+    openModal("modalProduct");
+  }
+
+  function openEditProduct(catIdx, prodId) {
+    addingToCatIdx = catIdx; editingProdId = prodId;
+    const prod = catalog[catIdx].products.find(p => p.id === prodId);
+    document.getElementById("modalProductTitle").textContent = "Editar Producto";
+    document.getElementById("inputProductName").value  = prod.name;
+    document.getElementById("inputProductDesc").value  = prod.desc || "";
+    document.getElementById("inputProductPrice").value = prod.price;
+    openModal("modalProduct");
+  }
+
+  document.getElementById("btnCancelProduct").addEventListener("click", () => closeModal("modalProduct"));
+  document.getElementById("btnSaveProduct").addEventListener("click", () => {
+    const name  = document.getElementById("inputProductName").value.trim();
+    const desc  = document.getElementById("inputProductDesc").value.trim();
+    const price = parseFloat(document.getElementById("inputProductPrice").value);
+    if (!name)        { alert("El nombre es obligatorio."); return; }
+    if (isNaN(price)) { alert("El precio es obligatorio."); return; }
+    const cat = catalog[addingToCatIdx];
+    if (editingProdId) {
+      const prod = cat.products.find(p => p.id === editingProdId);
+      prod.name = name; prod.desc = desc; prod.price = price;
+      toast("Producto actualizado ✓");
+    } else {
+      cat.products.push({ id: uid(), name, desc, price });
+      toast("Producto agregado ✓");
+    }
+    closeModal("modalProduct");
+    saveCatalog(); render();
+  });
+
+  // Confirm delete
+  let pendingDelete = null;
+  function confirmDelete(what, fn) {
+    pendingDelete = fn;
+    document.getElementById("confirmText").textContent = `¿Seguro que querés eliminar este/a ${what}? No se puede deshacer.`;
+    openModal("modalConfirm");
+  }
+  document.getElementById("btnCancelConfirm").addEventListener("click", () => { closeModal("modalConfirm"); pendingDelete = null; });
+  document.getElementById("btnConfirmDelete").addEventListener("click", () => {
+    if (pendingDelete) { pendingDelete(); pendingDelete = null; }
+    closeModal("modalConfirm");
+  });
+
+  function deleteCategory(catIdx) { catalog.splice(catIdx, 1); saveCatalog(); render(); toast("Categoría eliminada"); }
+  function deleteProduct(catIdx, prodId) {
+    catalog[catIdx].products = catalog[catIdx].products.filter(p => p.id !== prodId);
+    saveCatalog(); render(); toast("Producto eliminado");
+  }
+
+  ["modalCategory","modalProduct","modalConfirm"].forEach(id => {
+    document.getElementById(id).addEventListener("click", (e) => {
+      if (e.target === document.getElementById(id)) closeModal(id);
+    });
+  });
+
+  // Drag & drop
+  let dragCatIdx = null, dragProdId = null, dragProdCatIdx = null;
+
+  function attachDragEvents() {
+    document.querySelectorAll(".category-header[draggable]").forEach(header => {
+      header.addEventListener("dragstart", (e) => {
+        dragCatIdx = parseInt(header.dataset.catIdx); dragProdId = null;
+        e.dataTransfer.effectAllowed = "move";
+      });
+    });
+    document.querySelectorAll(".category-block").forEach(block => {
+      block.addEventListener("dragover", (e) => {
+        if (dragCatIdx === null || dragProdId !== null) return;
+        e.preventDefault(); block.classList.add("cat-drag-over");
+      });
+      block.addEventListener("dragleave", () => block.classList.remove("cat-drag-over"));
+      block.addEventListener("drop", (e) => {
+        e.preventDefault(); block.classList.remove("cat-drag-over");
+        if (dragCatIdx === null || dragProdId !== null) return;
+        const targetIdx = parseInt(block.dataset.catIdx);
+        if (targetIdx === dragCatIdx) return;
+        const moved = catalog.splice(dragCatIdx, 1)[0];
+        catalog.splice(targetIdx, 0, moved);
+        dragCatIdx = null; saveCatalog(); render();
+      });
+    });
+    document.querySelectorAll(".product-card[draggable]").forEach(card => {
+      card.addEventListener("dragstart", (e) => {
+        dragProdId = card.dataset.prodId; dragProdCatIdx = parseInt(card.dataset.catIdx); dragCatIdx = null;
+        e.dataTransfer.effectAllowed = "move";
+        setTimeout(() => card.classList.add("dragging"), 0);
+      });
+      card.addEventListener("dragend", () => card.classList.remove("dragging"));
+      card.addEventListener("dragover", (e) => { if (!dragProdId) return; e.preventDefault(); card.classList.add("drag-over"); });
+      card.addEventListener("dragleave", () => card.classList.remove("drag-over"));
+      card.addEventListener("drop", (e) => {
+        e.preventDefault(); card.classList.remove("drag-over");
+        if (!dragProdId) return;
+        const targetProdId = card.dataset.prodId;
+        const targetCatIdx = parseInt(card.dataset.catIdx);
+        if (dragProdId === targetProdId) return;
+        const sourceCat = catalog[dragProdCatIdx];
+        const targetCat = catalog[targetCatIdx];
+        const sourceIdx = sourceCat.products.findIndex(p => p.id === dragProdId);
+        const targetIdx = targetCat.products.findIndex(p => p.id === targetProdId);
+        const [moved] = sourceCat.products.splice(sourceIdx, 1);
+        if (dragProdCatIdx !== targetCatIdx) targetCat.products.splice(targetIdx, 0, moved);
+        else sourceCat.products.splice(targetIdx, 0, moved);
+        dragProdId = null; saveCatalog(); render();
+      });
+    });
+  }
+</script>
 </body>
 </html>
