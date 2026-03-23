@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Catálogo — Iniciar Sesión</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/login.css" />
+</head>
+<body>
+  <div class="login-wrapper">
+    <div class="login-card">
+      <div class="brand">
+        <span class="brand-icon">◈</span>
+        <h1>Catálogo</h1>
+        <p class="brand-sub">Gestión de productos</p>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Correo electrónico</label>
+        <input type="email" id="email" placeholder="usuario@correo.com" autocomplete="email" />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" />
+      </div>
+
+      <button class="btn-login" id="btnLogin">Iniciar sesión</button>
+
+      <p class="error-msg" id="errorMsg"></p>
+
+      <p class="register-link">¿No tenés cuenta? <a href="#" id="linkRegister">Registrarse</a></p>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged }
+      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    // ⚠️ SUBSTITUIR pelas suas credenciais do Firebase
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) window.location.href = "catalog.html";
+    });
+
+    let isRegisterMode = false;
+
+    document.getElementById("linkRegister").addEventListener("click", (e) => {
+      e.preventDefault();
+      isRegisterMode = !isRegisterMode;
+      const btn = document.getElementById("btnLogin");
+      const link = document.getElementById("linkRegister");
+      const footer = document.querySelector(".register-link");
+      if (isRegisterMode) {
+        btn.textContent = "Crear cuenta";
+        footer.innerHTML = '¿Ya tenés cuenta? <a href="#" id="linkRegister">Iniciar sesión</a>';
+      } else {
+        btn.textContent = "Iniciar sesión";
+        footer.innerHTML = '¿No tenés cuenta? <a href="#" id="linkRegister">Registrarse</a>';
+      }
+      document.getElementById("linkRegister").addEventListener("click", arguments.callee);
+    });
+
+    document.getElementById("btnLogin").addEventListener("click", async () => {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const errorMsg = document.getElementById("errorMsg");
+      errorMsg.textContent = "";
+
+      if (!email || !password) {
+        errorMsg.textContent = "Por favor completá todos los campos.";
+        return;
+      }
+
+      try {
+        if (isRegisterMode) {
+          await createUserWithEmailAndPassword(auth, email, password);
+        } else {
+          await signInWithEmailAndPassword(auth, email, password);
+        }
+        window.location.href = "catalog.html";
+      } catch (err) {
+        const msgs = {
+          "auth/user-not-found": "Usuario no encontrado.",
+          "auth/wrong-password": "Contraseña incorrecta.",
+          "auth/invalid-email": "Correo inválido.",
+          "auth/email-already-in-use": "El correo ya está registrado.",
+          "auth/weak-password": "La contraseña debe tener al menos 6 caracteres.",
+          "auth/invalid-credential": "Credenciales inválidas."
+        };
+        errorMsg.textContent = msgs[err.code] || "Error al iniciar sesión.";
+      }
+    });
+
+    document.getElementById("password").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") document.getElementById("btnLogin").click();
+    });
+  </script>
+</body>
+</html>
