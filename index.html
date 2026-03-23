@@ -1,120 +1,382 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Catálogo — Iniciar Sesión</title>
+  <title>Catálogo — Acceso</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
-      --bg: #f7f5f2; --card: #ffffff; --ink: #1a1a1a; --ink-soft: #6b6b6b;
-      --accent: #2c2c2c; --accent-hover: #000000; --border: #e0ddd8;
-      --error: #c0392b; --radius: 2px;
-      --font-display: 'Cormorant Garamond', serif;
-      --font-body: 'DM Sans', sans-serif;
+      --cream: #faf8f3;
+      --warm-white: #ffffff;
+      --gold: #b8933f;
+      --gold-light: #d4aa5a;
+      --gold-pale: #f0e6cc;
+      --ink: #1c1a17;
+      --ink-mid: #4a4540;
+      --ink-soft: #8a8278;
+      --border: #e8e0d0;
+      --font-display: 'Playfair Display', serif;
+      --font-body: 'Jost', sans-serif;
     }
-    body { font-family: var(--font-body); background: var(--bg); min-height: 100vh; display: flex; align-items: center; justify-content: center; color: var(--ink); }
-    .login-wrapper { width: 100%; padding: 24px; display: flex; justify-content: center; }
-    .login-card { background: var(--card); border: 1px solid var(--border); padding: 52px 48px; width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 20px; animation: fadeUp 0.5s ease both; }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-    .brand { text-align: center; margin-bottom: 12px; }
-    .brand-icon { font-size: 28px; display: block; margin-bottom: 12px; color: var(--ink); }
-    .brand h1 { font-family: var(--font-display); font-size: 38px; font-weight: 300; letter-spacing: 0.04em; }
-    .brand-sub { font-size: 12px; color: var(--ink-soft); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 6px; font-weight: 300; }
-    .form-group { display: flex; flex-direction: column; gap: 7px; }
-    .form-group label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); font-weight: 500; }
-    .form-group input { border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; font-size: 14px; font-family: var(--font-body); color: var(--ink); background: var(--bg); outline: none; transition: border-color 0.2s; }
-    .form-group input:focus { border-color: var(--ink); background: #fff; }
-    .btn-login { margin-top: 6px; background: var(--accent); color: #fff; border: none; padding: 14px; font-family: var(--font-body); font-size: 13px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border-radius: var(--radius); transition: background 0.2s; }
-    .btn-login:hover { background: var(--accent-hover); }
-    .error-msg { font-size: 13px; color: var(--error); text-align: center; min-height: 18px; }
-    .register-link { text-align: center; font-size: 13px; color: var(--ink-soft); }
-    .register-link a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
-    @media (max-width: 480px) { .login-card { padding: 36px 24px; } }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--cream);
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      color: var(--ink);
+      overflow: hidden;
+    }
+
+    /* Left decorative panel */
+    .panel-left {
+      background: var(--ink);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .panel-left::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 30% 70%, rgba(184,147,63,0.15) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 60% at 80% 20%, rgba(184,147,63,0.08) 0%, transparent 70%);
+    }
+
+    .panel-left::after {
+      content: '';
+      position: absolute;
+      top: 40px; left: 40px; right: 40px; bottom: 40px;
+      border: 1px solid rgba(184,147,63,0.2);
+      pointer-events: none;
+    }
+
+    .panel-ornament {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    .ornament-line {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+    .ornament-line::before,
+    .ornament-line::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(184,147,63,0.5));
+    }
+    .ornament-line::after {
+      background: linear-gradient(to left, transparent, rgba(184,147,63,0.5));
+    }
+    .ornament-diamond {
+      width: 8px; height: 8px;
+      background: var(--gold);
+      transform: rotate(45deg);
+    }
+
+    .panel-tagline {
+      font-family: var(--font-display);
+      font-size: 42px;
+      font-weight: 400;
+      color: #fff;
+      line-height: 1.2;
+      letter-spacing: 0.01em;
+      margin-bottom: 24px;
+    }
+
+    .panel-tagline em {
+      font-style: italic;
+      color: var(--gold-light);
+    }
+
+    .panel-sub {
+      font-size: 12px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    /* Right login panel */
+    .panel-right {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 48px;
+      background: var(--warm-white);
+    }
+
+    .login-box {
+      width: 100%;
+      max-width: 380px;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .login-brand {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .login-brand-icon {
+      display: inline-block;
+      width: 48px; height: 48px;
+      border: 1px solid var(--gold);
+      transform: rotate(45deg);
+      margin-bottom: 24px;
+      position: relative;
+    }
+    .login-brand-icon::after {
+      content: '◈';
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: var(--gold);
+      transform: rotate(-45deg);
+    }
+
+    .login-brand h1 {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 400;
+      color: var(--ink);
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+    }
+
+    .login-brand p {
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      font-weight: 300;
+    }
+
+    .divider-gold {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 36px;
+    }
+    .divider-gold::before, .divider-gold::after {
+      content: '';
+      flex: 1; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold-pale));
+    }
+    .divider-gold::after {
+      background: linear-gradient(to left, transparent, var(--gold-pale));
+    }
+    .divider-dot {
+      width: 5px; height: 5px;
+      background: var(--gold);
+      transform: rotate(45deg);
+    }
+
+    .field {
+      margin-bottom: 20px;
+    }
+    .field label {
+      display: block;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-bottom: 8px;
+    }
+    .field input {
+      width: 100%;
+      border: none;
+      border-bottom: 1px solid var(--border);
+      padding: 10px 0;
+      font-size: 15px;
+      font-family: var(--font-body);
+      font-weight: 300;
+      color: var(--ink);
+      background: transparent;
+      outline: none;
+      transition: border-color 0.25s;
+    }
+    .field input:focus { border-bottom-color: var(--gold); }
+    .field input::placeholder { color: var(--border); }
+
+    .btn-enter {
+      width: 100%;
+      margin-top: 32px;
+      background: var(--ink);
+      color: #fff;
+      border: none;
+      padding: 16px;
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.25s;
+    }
+    .btn-enter::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 0; height: 2px;
+      background: var(--gold);
+      transition: width 0.3s ease;
+    }
+    .btn-enter:hover { background: #111; }
+    .btn-enter:hover::after { width: 100%; }
+
+    .error-msg {
+      font-size: 12px;
+      color: #c0392b;
+      text-align: center;
+      margin-top: 14px;
+      min-height: 16px;
+      letter-spacing: 0.04em;
+    }
+
+    .toggle-row {
+      text-align: center;
+      margin-top: 28px;
+      font-size: 12px;
+      color: var(--ink-soft);
+      font-weight: 300;
+    }
+    .toggle-row a {
+      color: var(--gold);
+      text-decoration: none;
+      cursor: pointer;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+    }
+    .toggle-row a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+    @media (max-width: 768px) {
+      body { grid-template-columns: 1fr; }
+      .panel-left { display: none; }
+      .panel-right { padding: 40px 28px; background: var(--cream); }
+    }
   </style>
 </head>
 <body>
-  <div class="login-wrapper">
-    <div class="login-card">
-      <div class="brand">
-        <span class="brand-icon">◈</span>
-        <h1>Catálogo</h1>
-        <p class="brand-sub">Gestión de productos</p>
-      </div>
-      <div class="form-group">
-        <label for="email">Correo electrónico</label>
-        <input type="email" id="email" placeholder="usuario@correo.com" autocomplete="email" />
-      </div>
-      <div class="form-group">
-        <label for="password">Contraseña</label>
-        <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" />
-      </div>
-      <button class="btn-login" id="btnLogin">Iniciar sesión</button>
-      <p class="error-msg" id="errorMsg"></p>
-      <p class="register-link" id="footerLink">¿No tenés cuenta? <a id="linkToggle">Registrarse</a></p>
-    </div>
+
+<div class="panel-left">
+  <div class="panel-ornament">
+    <div class="ornament-line"><div class="ornament-diamond"></div></div>
+    <div class="panel-tagline">Gestión<br>de <em>productos</em><br>con elegancia.</div>
+    <p class="panel-sub">Catálogo profesional</p>
   </div>
+</div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged }
-      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+<div class="panel-right">
+  <div class="login-box">
+    <div class="login-brand">
+      <div class="login-brand-icon"></div>
+      <h1>Catálogo</h1>
+      <p>Acceso privado</p>
+    </div>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDjJ7S7VLtfIY-3N_SrIpgvEkado-wHvUw",
-      authDomain: "catalogo-62d38.firebaseapp.com",
-      projectId: "catalogo-62d38",
-      storageBucket: "catalogo-62d38.firebasestorage.app",
-      messagingSenderId: "39586274990",
-      appId: "1:39586274990:web:1006cf310ab98f9361973f"
-    };
+    <div class="divider-gold"><div class="divider-dot"></div></div>
 
-    const app  = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+    <div class="field">
+      <label>Correo electrónico</label>
+      <input type="email" id="email" placeholder="tu@correo.com" autocomplete="email"/>
+    </div>
+    <div class="field">
+      <label>Contraseña</label>
+      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password"/>
+    </div>
 
-    onAuthStateChanged(auth, (user) => {
-      if (user) window.location.href = "catalog.html";
-    });
+    <button class="btn-enter" id="btnLogin">Ingresar</button>
+    <p class="error-msg" id="errorMsg"></p>
+    <p class="toggle-row" id="toggleRow">¿No tenés cuenta? <a id="linkToggle">Registrarse</a></p>
+  </div>
+</div>
 
-    let isRegister = false;
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
+  const firebaseConfig = {
+    apiKey: "AIzaSyDjJ7S7VLtfIY-3N_SrIpgvEkado-wHvUw",
+    authDomain: "catalogo-62d38.firebaseapp.com",
+    projectId: "catalogo-62d38",
+    storageBucket: "catalogo-62d38.firebasestorage.app",
+    messagingSenderId: "39586274990",
+    appId: "1:39586274990:web:1006cf310ab98f9361973f"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  onAuthStateChanged(auth, (user) => { if (user) window.location.href = "catalog.html"; });
+
+  let isRegister = false;
+
+  function bindToggle() {
     document.getElementById("linkToggle").addEventListener("click", () => {
       isRegister = !isRegister;
-      document.getElementById("btnLogin").textContent = isRegister ? "Crear cuenta" : "Iniciar sesión";
-      document.getElementById("footerLink").innerHTML = isRegister
+      document.getElementById("btnLogin").textContent = isRegister ? "Crear cuenta" : "Ingresar";
+      document.getElementById("toggleRow").innerHTML = isRegister
         ? '¿Ya tenés cuenta? <a id="linkToggle">Iniciar sesión</a>'
         : '¿No tenés cuenta? <a id="linkToggle">Registrarse</a>';
-      document.getElementById("linkToggle").addEventListener("click", arguments.callee);
+      bindToggle();
     });
+  }
+  bindToggle();
 
-    document.getElementById("btnLogin").addEventListener("click", async () => {
-      const email    = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-      const errorMsg = document.getElementById("errorMsg");
-      errorMsg.textContent = "";
-      if (!email || !password) { errorMsg.textContent = "Completá todos los campos."; return; }
-      try {
-        if (isRegister) await createUserWithEmailAndPassword(auth, email, password);
-        else            await signInWithEmailAndPassword(auth, email, password);
-        window.location.href = "catalog.html";
-      } catch (err) {
-        const msgs = {
-          "auth/user-not-found": "Usuario no encontrado.",
-          "auth/wrong-password": "Contraseña incorrecta.",
-          "auth/invalid-email": "Correo inválido.",
-          "auth/email-already-in-use": "El correo ya está registrado.",
-          "auth/weak-password": "La contraseña debe tener al menos 6 caracteres.",
-          "auth/invalid-credential": "Credenciales inválidas."
-        };
-        errorMsg.textContent = msgs[err.code] || "Error al iniciar sesión.";
-      }
-    });
+  document.getElementById("btnLogin").addEventListener("click", async () => {
+    const email    = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const errorMsg = document.getElementById("errorMsg");
+    errorMsg.textContent = "";
+    if (!email || !password) { errorMsg.textContent = "Completá todos los campos."; return; }
+    try {
+      if (isRegister) await createUserWithEmailAndPassword(auth, email, password);
+      else            await signInWithEmailAndPassword(auth, email, password);
+      window.location.href = "catalog.html";
+    } catch (err) {
+      const msgs = {
+        "auth/user-not-found": "Usuario no encontrado.",
+        "auth/wrong-password": "Contraseña incorrecta.",
+        "auth/invalid-email": "Correo inválido.",
+        "auth/email-already-in-use": "El correo ya está registrado.",
+        "auth/weak-password": "Mínimo 6 caracteres.",
+        "auth/invalid-credential": "Credenciales inválidas."
+      };
+      errorMsg.textContent = msgs[err.code] || "Error al iniciar sesión.";
+    }
+  });
 
-    document.getElementById("password").addEventListener("keydown", (e) => {
-      if (e.key === "Enter") document.getElementById("btnLogin").click();
-    });
-  </script>
+  document.getElementById("password").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") document.getElementById("btnLogin").click();
+  });
+</script>
 </body>
 </html>
